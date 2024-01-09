@@ -1,43 +1,35 @@
 #!/usr/bin/python3
-"""
-Createw Flask app; and register the blueprint app_views to Flask instance app.
-"""
+""" A script return the status of the API """
 
-from os import getenv
+from api.v1.views import app_views
 from flask import Flask, jsonify, make_response
 from flask_cors import CORS
+from os import getenv
 from models import storage
-from api.v1.views import app_views
-
 
 app = Flask(__name__)
 app.register_blueprint(app_views)
-
-# enable CORS and allow for origins:
-CORS(app, resources={r"/*": {"origins": "0.0.0.0"}})
-
-
-#app.url_map.strict_slashes = False
+cors = CORS(app, resources={r"/api/*": {"origins": "0.0.0.0"}})
+host = getenv("HBNB_API_HOST", "0.0.0.0")
+port = getenv("HBNB_API_PORT", "5000")
+app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 
 
 @app.teardown_appcontext
-def teardown_engine(exception):
+def teardown(exception):
     """
-    Removes the current SQLAlchemy Session object after each request.
+    calls storage.close()
     """
     storage.close()
 
 
-# Error handlers for expected app behavior:
 @app.errorhandler(404)
 def not_found(error):
     """
-    Return errmsg `Not Found`.
+    handls for 404 errors, returns a JSON-formatted.
     """
     return make_response(jsonify({"error": "Not found"}), 404)
 
 
-if __name__ == '__main__':
-    host = getenv('HBNB_API_HOST', '0.0.0.0')
-    port = getenv('HBNB_API_PORT', '5000')
-    app.run(host, port, threaded=True)
+if __name__ == "__main__":
+    app.run(host, int(port), threaded=True)
