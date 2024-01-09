@@ -4,10 +4,11 @@ Createw Flask app; and register the blueprint app_views to Flask instance app.
 '''
 
 from os import getenv
-from flask import Flask, jsonify
+from flask import Flask, jsonify, make_response
 from flask_cors import CORS
 from models import storage
 from api.v1.views import app_views
+
 
 app = Flask(__name__)
 
@@ -32,8 +33,7 @@ def not_found(error):
     '''
     Return errmsg `Not Found`.
     '''
-    response = {'error': 'Not found'}
-    return jsonify(response), 404
+    return make_response(jsonify({"error": "Not found"}), 404)
 
 
 if __name__ == '__main__':
