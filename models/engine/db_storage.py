@@ -82,7 +82,7 @@ class DBStorage:
         """
         if type(cls) is not str:
             cls = cls.__name__
-        return self.__objects.get(cls + "." + id)
+        return self.all().get(cls + "." + id)
 
     def count(self, cls=None):
         """
